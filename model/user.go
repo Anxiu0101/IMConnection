@@ -1,8 +1,7 @@
 package model
 
 import (
-	"MedicalCare/conf"
-
+	"IMConnection/conf"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -50,12 +49,14 @@ type UserInfo struct {
 	Tel    int    `json:"tel" form:"tel"`
 }
 
+// AccountInfo 账户资料结构体
 type AccountInfo struct {
 	ID       uint   `json:"id" form:"id"`
 	UserName string `json:"username" form:"username"`
 	Avatars  string `json:"avatars" form:"avatars"`
 }
 
+// BuildUserInfo 将 User 对象序列化为 UserInfo
 func BuildUserInfo(user User) UserInfo {
 	return UserInfo{
 		Email:  user.Email,
@@ -65,6 +66,7 @@ func BuildUserInfo(user User) UserInfo {
 	}
 }
 
+// BuildAccountInfo 将 User 对象序列化为 AccountInfo
 func BuildAccountInfo(user User) AccountInfo {
 	return AccountInfo{
 		ID:       user.ID,
@@ -73,15 +75,7 @@ func BuildAccountInfo(user User) AccountInfo {
 	}
 }
 
+// BuildUser 序列化 User
 func BuildUser(user User) (AccountInfo, UserInfo) {
-	return AccountInfo{
-			ID:       user.ID,
-			UserName: user.UserName,
-			Avatars:  user.Avatars,
-		}, UserInfo{
-			Email:  user.Email,
-			Gender: user.Gender,
-			Age:    user.Age,
-			Tel:    user.Tel,
-		}
+	return BuildAccountInfo(user), BuildUserInfo(user)
 }

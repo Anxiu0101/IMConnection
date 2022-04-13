@@ -1,9 +1,9 @@
 package main
 
 import (
-	"MedicalCare/conf"
-	"MedicalCare/model"
-	"MedicalCare/router"
+	"IMConnection/conf"
+	"IMConnection/model"
+	"IMConnection/router"
 	"fmt"
 	"net/http"
 )
