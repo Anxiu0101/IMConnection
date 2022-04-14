@@ -42,6 +42,8 @@
 
 在这个 demo 中，使用 JWT(JSON Web Token) 验证作为登录验证，使用 access token 和 refresh token 这样的一个 token 组。服务器使用 access token 进行验证操作，当 access token 过期但是 refresh token 未过期时，服务器会签发一个新的 access token 给客户端。
 
+在这里使用的是 oauth2 lib，将用户 ID 和用户名作为 access token 的信息，以便于用户鉴权。
+
 #### 好友关系
 
 好友关系在用户未登录时，储存在 SQL 数据库中，当用户从客户端发送了登录请求后，用户 ID 会被服务器加载到内存，该用户的好友关系会被缓存到 redis 数据库中，以提高访问速度。
