@@ -1,9 +1,9 @@
 package model
 
 import (
-	"MedicalCare/conf"
+	"IMConnection/conf"
 	"fmt"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
@@ -24,7 +24,7 @@ func Setup() {
 	)
 
 	// open the database and buffer the conf
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true, // 迁移时禁用外键
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix:   conf.DatabaseSetting.TablePrefix, // set the prefix name of table
@@ -47,8 +47,10 @@ func Setup() {
 }
 
 func migration() {
-	DB.AutoMigrate(
-		User{})
-
-	return
+	//自动迁移模式
+	DB.Set("gorm:table_options", "charset=utf8mb4").
+		AutoMigrate(
+			&User{},
+			&Relation{},
+		)
 }

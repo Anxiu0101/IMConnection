@@ -2,11 +2,22 @@
 
 ## 目标
 
-这是一个作业demo，目的是创造一个轻量级的 IM 沟通软件后端。
+这是一个作业 demo，目的是创造一个轻量级的 IM 沟通软件后端。
 
 ## 主要依赖
 
+```shell
+# web structure
+$ go get -u github.com/gin-gonic/gin
 
+# database
+$ go get -u gorm.io/gorm
+$ go get -u gorm.io/driver/postgres
+
+# util
+$ go get -u github.com/go-ini/ini # config file reader
+$ go get -u golang.org/x/crypto/bcrypt # transform Ciphertext
+```
 
 ## 问题
 
@@ -49,3 +60,4 @@
 好友关系在用户未登录时，储存在 SQL 数据库中，当用户从客户端发送了登录请求后，用户 ID 会被服务器加载到内存，该用户的好友关系会被缓存到 redis 数据库中，以提高访问速度。
 
 ### 私信
+
