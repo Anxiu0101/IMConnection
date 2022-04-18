@@ -1,8 +1,8 @@
 package router
 
 import (
-	v1 "MedicalCare/api/v1"
-	"MedicalCare/docs"
+	v1 "IMConnection/api/v1"
+	"IMConnection/docs"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"

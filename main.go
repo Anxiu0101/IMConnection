@@ -3,6 +3,7 @@ package main
 import (
 	"IMConnection/conf"
 	"IMConnection/model"
+	"IMConnection/pkg/logging"
 	"IMConnection/router"
 	"fmt"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 func init() {
 	conf.Setup()
 	model.Setup()
+	logging.Setup()
 }
 
 func main() {

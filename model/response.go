@@ -18,8 +18,9 @@ type DataList struct {
 
 //TokenData 带有token的Data结构
 type TokenData struct {
-	User        interface{} `json:"user"`
-	AccessToken string      `json:"access_token"`
+	User         interface{} `json:"user"`
+	AccessToken  string      `json:"access_token"`
+	RefreshToken string      `json:"refresh_token"`
 }
 
 //TrackedErrorResponse 有追踪信息的错误反应
