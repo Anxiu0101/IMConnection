@@ -20,7 +20,8 @@ type User struct {
 	Age    int    `json:"age" gorm:"size:8"`
 	Tel    int    `json:"tel" gorm:"size:13"`
 
-	State bool `json:"state" gorm:"column:state"`
+	State        bool   `json:"state" gorm:"column:state"`
+	RefreshToken string `json:"refresh_token" gorm:"refresh_token"`
 }
 
 //SetPassword 设置密码

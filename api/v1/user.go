@@ -3,6 +3,7 @@ package v1
 import (
 	"IMConnection/api"
 	"IMConnection/pkg/logging"
+	"IMConnection/pkg/util"
 	"IMConnection/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -53,8 +54,8 @@ func UserLogin(c *gin.Context) {
 func ResetUserPassword(c *gin.Context) {
 	var accountService service.AccountService
 	if err := c.ShouldBind(&accountService); err != nil {
-		//TODO 重设密码接口从 access token 中解析用户 id
-		res := accountService.ResetPassword(1, accountService.Password)
+		claim, _ := util.ParseToken(c.GetHeader("Authorization"))
+		res := accountService.ResetPassword(claim.ID, accountService.Password)
 		c.JSON(http.StatusOK, res)
 	} else {
 		logging.Info(err)
@@ -62,10 +63,30 @@ func ResetUserPassword(c *gin.Context) {
 	}
 }
 
-func GetUserInfo(c *gin.Context) {
+func RefreshAccessToken(c *gin.Context) {
 
 }
 
-func UpdateUserInfo(c *gin.Context) {
+func GetUserInfo(c *gin.Context) {
+	var userService service.UserService
+	if err := c.ShouldBind(&userService); err != nil {
+		claim, _ := util.ParseToken(c.GetHeader("Authorization"))
+		res := userService.GetInfo(claim.ID)
+		c.JSON(http.StatusOK, res)
+	} else {
+		logging.Info(err)
+		c.JSON(http.StatusBadRequest, api.ErrorResponse(err))
+	}
+}
 
+func UpdateUserInfo(c *gin.Context) {
+	var userService service.UserService
+	if err := c.ShouldBind(&userService); err != nil {
+		claim, _ := util.ParseToken(c.GetHeader("Authorization"))
+		res := userService.GetInfo(claim.ID)
+		c.JSON(http.StatusOK, res)
+	} else {
+		logging.Info(err)
+		c.JSON(http.StatusBadRequest, api.ErrorResponse(err))
+	}
 }

@@ -75,7 +75,7 @@ func (service *AccountService) Login() model.Response {
 	// 查询用户是否存在
 	// 错误情况：用户被封禁，用户不存在，数据库错误
 	var user model.User
-	if err := model.DB.Where("username = ? AND state = 0", service.Username).Find(&user).Error; err != nil {
+	if err := model.DB.Select("id").Where("username = ? AND state = 0", service.Username).Find(&user).Error; err != nil {
 		code = e.InvalidParams
 		logging.Info(err)
 		return model.Response{
@@ -95,9 +95,20 @@ func (service *AccountService) Login() model.Response {
 		}
 	}
 
-	// 修改为使用 refresh token 和 access token 组成的 token 对
-	// TODO
-	token, err := util.GenerateToken(user.ID, service.Username, 0)
+	// 将用户好友关系载入缓存，若加载失败则退出并返回 加载用户关系失败
+	// TODO 修改其使得用户关系加载失败也可以正常登录
+	if err := model.LoadRelation(); err != nil {
+		logging.Info(err)
+		code = e.Error
+		return model.Response{
+			Code: code,
+			Msg:  e.GetMsg(code),
+			Data: "加载用户关系失败",
+		}
+	}
+
+	// TODO 修改为使用 refresh token 和 access token 组成的 token 对
+	token, err := util.GenerateTokenPair(user.ID, service.Username, 0)
 	if err != nil {
 		logging.Info(err)
 		code = e.Error
@@ -117,6 +128,7 @@ func (service *AccountService) Login() model.Response {
 // ResetPassword
 // 1. 查询用户
 // 2. 设置用户密码
+// 3. 删除 refresh token
 // 3. 返回结果
 func (service *AccountService) ResetPassword(id uint, newPassword string) model.Response {
 	code := e.Success
@@ -160,19 +172,50 @@ type UserService struct {
 	Tel    int    `json:"tel" form:"tel"`
 }
 
-func (service *UserService) GetInfo() model.Response {
+// GetInfo 获取用户信息
+// 1. 检查用户
+// 2. 获取用户信息
+// 3. 返回结果
+func (service *UserService) GetInfo(uid uint) model.Response {
 	code := e.Success
+
+	var user model.User
+	if err := model.DB.Model(model.User{}).First(&user).Error; err != nil {
+		code = e.Error
+		logging.Info(err)
+		return model.Response{
+			Code: code,
+			Msg:  e.GetMsg(code),
+			Data: "用户不存在",
+		}
+	}
+
+	var userInfo model.UserInfo
+	if err := model.DB.Model(user).Find(&userInfo).Error; err != nil {
+		code = e.Error
+		logging.Info(err)
+		return model.Response{
+			Code: code,
+			Msg:  e.GetMsg(code),
+			Data: "查询用户信息失败",
+		}
+	}
 
 	return model.Response{
 		Code: code,
 		Msg:  e.GetMsg(code),
-		Data: "Successful login",
+		Data: userInfo,
 	}
 }
 
+// UpdateInfo 更新用户信息
+// 1. 检查用户
+// 2. 更新用户信息
 func (service *UserService) UpdateInfo() model.Response {
 	code := e.Success
 
+	// TODO UpdateInfo Service
+
 	return model.Response{
 		Code: code,
 		Msg:  e.GetMsg(code),
@@ -180,8 +223,15 @@ func (service *UserService) UpdateInfo() model.Response {
 	}
 }
 
+// GetRelationList 获取用户关系列表
+// 1. 检查用户
+// 2. 从 redis 中读取用户关系列表
+// 	3. 若 redis 中为空，则向 SQL 数据库中发送请求获取 relation
+// 4. 返回结果
 func (service *UserService) GetRelationList() model.Response {
 	code := e.Success
+
+	// TODO GetRelationList Service
 
 	return model.Response{
 		Code: code,
@@ -192,6 +242,8 @@ func (service *UserService) GetRelationList() model.Response {
 
 func (service *UserService) GetRelationByGroup(group string) model.Response {
 	code := e.Success
+
+	// TODO GetRelationByGroup
 
 	return model.Response{
 		Code: code,

@@ -26,11 +26,16 @@ func InitRouter() *gin.Engine {
 	{
 		apiUser.POST("/register", v1.UserRegister)
 		apiUser.POST("/login", v1.UserLogin)
+		apiUser.GET("/token", v1.RefreshAccessToken)
 	}
 
 	apiv1 := r.Group("/")
 	{
 		apiv1.GET("/user/info", v1.GetUserInfo)
+		apiv1.POST("/user/password", v1.ResetUserPassword)
+		apiv1.GET("/user/info", v1.GetUserInfo)
+		apiv1.POST("/user/info", v1.UpdateUserInfo)
+		apiv1.GET("/chat", v1.Chat)
 	}
 
 	// 404 信息返回
