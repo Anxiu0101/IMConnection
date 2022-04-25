@@ -11,7 +11,6 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 RUN sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
 # Update Ubuntu Software repository
-RUN apt-get update --fixing-missing
 RUN apt-get install gcc libc6-dev git lrzsz -y
 
 # Golang Environmnet
