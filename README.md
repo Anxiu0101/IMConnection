@@ -15,9 +15,10 @@ $ go get -u gorm.io/gorm
 $ go get -u gorm.io/driver/postgres
 
 # util
-$ go get -u github.com/go-ini/ini # config file reader
-$ go get -u golang.org/x/crypto/bcrypt # transform Ciphertext
+$ go get -u github.com/go-ini/ini       # config file reader
+$ go get -u golang.org/x/crypto/bcrypt  # transform Ciphertext
 $ go get -u github.com/dgrijalva/jwt-go # token generate and check
+$ go get -u github.com/unknwon/com      # util package
 ```
 
 ## 问题

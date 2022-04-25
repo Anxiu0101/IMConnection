@@ -35,7 +35,8 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/user/password", v1.ResetUserPassword)
 		apiv1.GET("/user/info", v1.GetUserInfo)
 		apiv1.POST("/user/info", v1.UpdateUserInfo)
-		apiv1.GET("/chat", v1.Chat)
+		apiv1.GET("/chat/single/:r_uid", v1.SingleChat)
+		apiv1.GET("/chat/group/:group")
 	}
 
 	// 404 信息返回
