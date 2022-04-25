@@ -1,5 +1,5 @@
-#Download base image ubuntu 20.04
-FROM ubuntu:20.04
+#Download base image golang latest
+FROM golang:latest
 
 # LABEL about the custom image
 LABEL maintainer="anxiu.fyc@foxmail.com"
