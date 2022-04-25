@@ -77,6 +77,14 @@ func BuildAccountInfo(user User) AccountInfo {
 }
 
 // BuildUser 序列化 User
-func BuildUser(user User) (AccountInfo, UserInfo) {
-	return BuildAccountInfo(user), BuildUserInfo(user)
+func BuildUser(user User) User {
+	return User{
+		UserName: user.UserName,
+		Avatars:  user.Avatars,
+
+		Email:  user.Email,
+		Gender: user.Gender,
+		Age:    user.Age,
+		Tel:    user.Tel,
+	}
 }

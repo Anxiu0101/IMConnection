@@ -31,7 +31,6 @@ func InitRouter() *gin.Engine {
 
 	apiv1 := r.Group("/")
 	{
-		apiv1.GET("/user/info", v1.GetUserInfo)
 		apiv1.POST("/user/password", v1.ResetUserPassword)
 		apiv1.GET("/user/info", v1.GetUserInfo)
 		apiv1.POST("/user/info", v1.UpdateUserInfo)

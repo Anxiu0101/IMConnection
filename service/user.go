@@ -121,7 +121,10 @@ func (service *AccountService) Login() model.Response {
 	return model.Response{
 		Code: code,
 		Msg:  e.GetMsg(code),
-		Data: model.TokenData{User: model.BuildUser(user), AccessToken: token},
+		Data: model.TokenData{
+			User:        model.BuildUser(user),
+			AccessToken: token,
+		},
 	}
 }
 
