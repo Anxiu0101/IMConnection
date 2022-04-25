@@ -10,9 +10,6 @@ LABEL description="This is custom Docker Image for the Golang Services."
 RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 RUN sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
-# Golang Environmnet
-RUN apt-get install golang -y
-
 # config Environment
 ENV GOROOT=/usr/lib/go
 ENV PATH=$PATH:/usr/lib/go/bin
@@ -21,5 +18,11 @@ ENV PATH=$GOPATH/bin:$PATH
 
 # config workspace
 WORKDIR /home/Project/IMConnection
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+COPY *.go ./
+RUN go build -o /docker-gs-ping
 EXPOSE 8000
 ENTRYPOINT ["go","run","main.go"]
+CMD [ "/go-project-test-env" ]
