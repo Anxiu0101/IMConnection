@@ -10,9 +10,6 @@ LABEL description="This is custom Docker Image for the Golang Services."
 RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 RUN sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
-# Update Ubuntu Software repository
-RUN apt-get install gcc libc6-dev git lrzsz -y
-
 # Golang Environmnet
 RUN apt-get install golang -y
 
