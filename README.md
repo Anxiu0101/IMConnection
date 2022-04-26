@@ -74,7 +74,9 @@ $ go get -u github.com/unknwon/com      # util package
 
 由于场景的不同，私聊与群聊的消息做的工作实际上是不一样的，私聊是单对单的信息发送，结构体中需要包含发送者与接收者。而群聊是发送者发送到群聊中后，由服务器广播给群聊的其他用户。
 
-// TODO
+![imgchat-mindmap](https://github.com/Anxiu0101/LectureNote4Img/blob/master/static/imgchat-mindmap.png)
+
+// TODO 通过修改和定义 SenderType 来实现
 
 消息可以设置消息类型，可以携带不同类型的信息而不仅仅是文本，例如定位信息、表情信息、网址信息等，可以为网址信息添加快照这样的。
 

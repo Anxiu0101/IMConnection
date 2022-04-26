@@ -14,14 +14,15 @@ func InitRouter() *gin.Engine {
 
 	docs.SwaggerInfo.BasePath = "/api/v1"
 
+	// util router
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"msg": "pong!",
 		})
 	})
-
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	// no token router
 	apiUser := r.Group("/user")
 	{
 		apiUser.POST("/register", v1.UserRegister)
@@ -29,14 +30,14 @@ func InitRouter() *gin.Engine {
 		apiUser.GET("/token", v1.RefreshAccessToken)
 	}
 
+	// token router
 	apiv1 := r.Group("/")
 	{
 		apiv1.GET("/user/info", v1.GetUserInfo)
 		apiv1.POST("/user/password", v1.ResetUserPassword)
 		apiv1.GET("/user/info", v1.GetUserInfo)
 		apiv1.POST("/user/info", v1.UpdateUserInfo)
-		apiv1.GET("/chat/single/:r_uid", v1.SingleChat)
-		apiv1.GET("/chat/group/:group")
+		apiv1.GET("/chat/:receiver", v1.Chat)
 	}
 
 	// 404 信息返回
