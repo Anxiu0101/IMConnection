@@ -20,8 +20,9 @@ type User struct {
 	Age    int    `json:"age" gorm:"size:8"`
 	Tel    int    `json:"tel" gorm:"size:13"`
 
-	State        bool   `json:"state" gorm:"column:state"`
-	RefreshToken string `json:"refresh_token" gorm:"refresh_token"`
+	State   bool     `json:"state" gorm:"column:state"`
+	Friends []*User  `json:"friends" gorm:"many2many:user_friends"`
+	Groups  []*Group `json:"groups" gorm:"many2many:group_members"`
 }
 
 //SetPassword 设置密码
@@ -38,6 +39,17 @@ func (user *User) SetPassword(password string) error {
 func (user *User) CheckPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	return err == nil
+}
+
+// LoadRelation 将用户好友关系载入缓存
+func LoadRelation() error {
+	var err error
+	return err
+}
+
+// UploadRelation 将用户关系从缓存中更新
+func UploadRelation() {
+
 }
 
 /* serialization */

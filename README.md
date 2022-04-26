@@ -64,6 +64,8 @@ $ go get -u github.com/unknwon/com      # util package
 
 好友关系在用户未登录时，储存在 SQL 数据库中，当用户从客户端发送了登录请求后，用户 ID 会被服务器加载到内存，该用户的好友关系会被缓存到 redis 数据库中，以提高访问速度。
 
+利用 `gorm` 的 `ManyToMany` 模式在 User 与 User 之间创建一张自引用连接表
+
 ### 通信
 
 #### 消息队列
@@ -74,7 +76,7 @@ $ go get -u github.com/unknwon/com      # util package
 
 由于场景的不同，私聊与群聊的消息做的工作实际上是不一样的，私聊是单对单的信息发送，结构体中需要包含发送者与接收者。而群聊是发送者发送到群聊中后，由服务器广播给群聊的其他用户。
 
-![imgchat-mindmap](https://github.com/Anxiu0101/LectureNote4Img/blob/master/static/imgchat-mindmap.png)
+![imgchat-mindmap](https://raw.githubusercontent.com/Anxiu0101/LectureNote4Img/master/static/imgchat-mindmap.png)
 
 // TODO 通过修改和定义 SenderType 来实现
 
@@ -83,6 +85,8 @@ $ go get -u github.com/unknwon/com      # util package
 #### 群组
 
 群组包含用户列表，如果有人发送了消息，可以将群聊一定时间内的历史消息纪律加载入缓存中，或者为群聊设置一定大小的消息缓存，因为实际上用户爬楼的意愿是比较低的。
+
+再仔细想了想，将群聊消息记录持久化即可，想过头了
 
 #### 文件上传
 
