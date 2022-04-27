@@ -37,20 +37,15 @@ func Setup() {
 	})
 
 	// some init set of database
-	mysqlDB, err := DB.DB()
+	pgSQL, err := DB.DB()
 	if err != nil {
 		log.Panicln("db.DB() err: ", err)
 	}
-	mysqlDB.SetMaxIdleConns(conf.DatabaseSetting.SetMaxIdleConns)       // SetMaxIdleConns 设置空闲连接池中连接的最大数量
-	mysqlDB.SetMaxOpenConns(conf.DatabaseSetting.SetMaxOpenConns)       // SetMaxOpenConns 设置打开数据库连接的最大数量
-	mysqlDB.SetConnMaxLifetime(conf.DatabaseSetting.SetConnMaxLifetime) // SetConnMaxLifetime 设置了连接可复用的最大时间
+	pgSQL.SetMaxIdleConns(conf.DatabaseSetting.SetMaxIdleConns)       // SetMaxIdleConns 设置空闲连接池中连接的最大数量
+	pgSQL.SetMaxOpenConns(conf.DatabaseSetting.SetMaxOpenConns)       // SetMaxOpenConns 设置打开数据库连接的最大数量
+	pgSQL.SetConnMaxLifetime(conf.DatabaseSetting.SetConnMaxLifetime) // SetConnMaxLifetime 设置了连接可复用的最大时间
 
 	// set auto migrate
-	migration()
-}
-
-func migration() {
-	//自动迁移模式
 	DB.Set("gorm:table_options", "charset=utf8mb4").
 		AutoMigrate(
 			&User{},

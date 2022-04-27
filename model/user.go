@@ -10,15 +10,15 @@ type User struct {
 	gorm.Model
 
 	// Account Info
-	UserName string `json:"username" gorm:"column:username;not null;uniqueIndex"`
-	Password string `json:"password" gorm:"column:password"`
-	Avatars  string `json:"avatars" gorm:"column:avatars"`
+	UserName string `json:"username" gorm:"column:username;size:255;not null;uniqueIndex"`
+	Password string `json:"password" gorm:"column:password;size:255"`
+	Avatars  string `json:"avatars"  gorm:"column:avatars"`
 
 	// User Info
 	Email  string `json:"email" gorm:"type:varchar(100);unique"`
 	Gender int    `json:"gender" gorm:"size:3"`
 	Age    int    `json:"age" gorm:"size:8"`
-	Tel    int    `json:"tel" gorm:"size:13"`
+	Tel    int    `json:"tel" gorm:"size:24"`
 
 	State   bool     `json:"state" gorm:"column:state"`
 	Friends []*User  `json:"friends" gorm:"many2many:user_friends"`
