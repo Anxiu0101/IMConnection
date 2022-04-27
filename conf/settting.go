@@ -41,8 +41,10 @@ type Database struct {
 	Password           string
 	Host               string
 	Name               string
-	TablePrefix        string
+	Port               string
 	SSLMode            string
+	TimeZone           string
+	TablePrefix        string
 	SetMaxIdleConns    int
 	SetMaxOpenConns    int
 	SetConnMaxLifetime time.Duration
