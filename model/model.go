@@ -16,11 +16,12 @@ func Setup() {
 	var err error
 
 	// pass conf to dsn, meet the problem that there is not
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local&sslmode=%s",
 		conf.DatabaseSetting.User,
 		conf.DatabaseSetting.Password,
 		conf.DatabaseSetting.Host,
 		conf.DatabaseSetting.Name,
+		conf.DatabaseSetting.SSLMode,
 	)
 
 	// open the database and buffer the conf
