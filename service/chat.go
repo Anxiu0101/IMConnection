@@ -18,13 +18,20 @@ type Broadcast struct {
 	Type    int
 }
 
+// Type of Message
+const (
+	SingleChat = 1
+	GroupChat  = 2
+	History    = 3
+)
+
 // ClientManager 用户管理
 type ClientManager struct {
-	Clients    map[string]*Client
-	Broadcast  chan *Broadcast
+	Clients    map[string]*Client // 全部的连接
+	Broadcast  chan *Broadcast    // 广播
 	Reply      chan *Client
-	Register   chan *Client
-	Unregister chan *Client
+	Register   chan *Client // 连接连接处理
+	Unregister chan *Client // 断开连接处理
 }
 
 var Manager = ClientManager{

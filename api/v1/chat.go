@@ -3,6 +3,7 @@ package v1
 import (
 	"IMConnection/pkg/util"
 	"IMConnection/service"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"net/http"
@@ -18,12 +19,14 @@ func Chat(c *gin.Context) {
 	conn, err := (&websocket.Upgrader{
 		// CheckOrigin 解决跨域问题
 		CheckOrigin: func(r *http.Request) bool {
+			fmt.Println("升级协议", "ua:", r.Header["User-Agent"], "referer:", r.Header["Referer"])
 			return true
 		}}).Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		http.NotFound(c.Writer, c.Request)
 		return
 	}
+	fmt.Println("webSocket 建立连接:", conn.RemoteAddr().String())
 
 	// Create A new Client Object
 	client := &service.Client{

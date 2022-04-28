@@ -13,6 +13,7 @@ $ go get -u github.com/gin-gonic/gin
 # database
 $ go get -u gorm.io/gorm
 $ go get -u gorm.io/driver/postgres
+$ go get -u github.com/go-redis/redis/v8
 
 # util
 $ go get -u github.com/go-ini/ini       # config file reader

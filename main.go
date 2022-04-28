@@ -1,6 +1,7 @@
 package main
 
 import (
+	"IMConnection/cache"
 	"IMConnection/conf"
 	"IMConnection/model"
 	"IMConnection/pkg/logging"
@@ -12,6 +13,7 @@ import (
 func init() {
 	conf.Setup()
 	model.Setup()
+	cache.Setup()
 	logging.Setup()
 }
 
