@@ -93,3 +93,6 @@ $ go get -u github.com/unknwon/com      # util package
 
 群聊文件的上传这个功能还没有想好
 
+## 缓存
+
+缓存字段统一以 `imc_` 开头，需要缓存的只有用户的好友关系

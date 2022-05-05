@@ -75,7 +75,7 @@ func (service *AccountService) Login() model.Response {
 	// 查询用户是否存在
 	// 错误情况：用户被封禁，用户不存在，数据库错误
 	var user model.User
-	if err := model.DB.Select("id").Where("username = ? AND state = 0", service.Username).Find(&user).Error; err != nil {
+	if err := model.DB.Where("username = ? AND state = TRUE", service.Username).Find(&user).Error; err != nil {
 		code = e.InvalidParams
 		logging.Info(err)
 		return model.Response{
@@ -107,8 +107,8 @@ func (service *AccountService) Login() model.Response {
 		}
 	}
 
-	// TODO 修改为使用 refresh token 和 access token 组成的 token 对
-	token, err := util.GenerateTokenPair(user.ID, service.Username, 0)
+	// 修改为使用 refresh token 和 access token 组成的 token 对
+	accessToken, refreshToken, err := util.GenerateTokenPair(user.ID, service.Username, 0)
 	if err != nil {
 		logging.Info(err)
 		code = e.Error
@@ -122,8 +122,9 @@ func (service *AccountService) Login() model.Response {
 		Code: code,
 		Msg:  e.GetMsg(code),
 		Data: model.TokenData{
-			User:        model.BuildUser(user),
-			AccessToken: token,
+			User:         model.BuildAccountInfo(user),
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
 		},
 	}
 }

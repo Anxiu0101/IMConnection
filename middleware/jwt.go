@@ -23,7 +23,11 @@ func JWT() gin.HandlerFunc {
 			if err != nil {
 				code = e.Error
 			} else if time.Now().Unix() > claims.ExpiresAt {
-				code = e.Error
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"code": e.Error,
+					"msg":  e.GetMsg(code),
+					"data": "token已过期",
+				})
 			}
 		}
 
@@ -31,6 +35,7 @@ func JWT() gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code": code,
 				"msg":  e.GetMsg(code),
+				"data": "鉴权失败",
 			})
 
 			c.Abort()

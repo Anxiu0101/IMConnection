@@ -22,7 +22,7 @@ import (
 // @Router /user/register [post]
 func UserRegister(c *gin.Context) {
 	var accountService service.AccountService
-	if err := c.ShouldBind(&accountService); err != nil {
+	if err := c.ShouldBind(&accountService); err == nil {
 		res := accountService.Register()
 		c.JSON(http.StatusOK, res)
 	} else {
@@ -42,7 +42,7 @@ func UserRegister(c *gin.Context) {
 // @Router /user/login [post]
 func UserLogin(c *gin.Context) {
 	var accountService service.AccountService
-	if err := c.ShouldBind(&accountService); err != nil {
+	if err := c.ShouldBind(&accountService); err == nil {
 		res := accountService.Login()
 		c.JSON(http.StatusOK, res)
 	} else {
@@ -53,7 +53,7 @@ func UserLogin(c *gin.Context) {
 
 func ResetUserPassword(c *gin.Context) {
 	var accountService service.AccountService
-	if err := c.ShouldBind(&accountService); err != nil {
+	if err := c.ShouldBind(&accountService); err == nil {
 		claim, _ := util.ParseToken(c.GetHeader("Authorization"))
 		res := accountService.ResetPassword(claim.ID, accountService.Password)
 		c.JSON(http.StatusOK, res)
@@ -69,7 +69,7 @@ func RefreshAccessToken(c *gin.Context) {
 
 func GetUserInfo(c *gin.Context) {
 	var userService service.UserService
-	if err := c.ShouldBind(&userService); err != nil {
+	if err := c.ShouldBind(&userService); err == nil {
 		claim, _ := util.ParseToken(c.GetHeader("Authorization"))
 		res := userService.GetInfo(claim.ID)
 		c.JSON(http.StatusOK, res)
@@ -81,7 +81,7 @@ func GetUserInfo(c *gin.Context) {
 
 func UpdateUserInfo(c *gin.Context) {
 	var userService service.UserService
-	if err := c.ShouldBind(&userService); err != nil {
+	if err := c.ShouldBind(&userService); err == nil {
 		claim, _ := util.ParseToken(c.GetHeader("Authorization"))
 		res := userService.GetInfo(claim.ID)
 		c.JSON(http.StatusOK, res)

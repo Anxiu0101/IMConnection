@@ -2,7 +2,6 @@ package util
 
 import (
 	"IMConnection/conf"
-	"IMConnection/model"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -18,7 +17,7 @@ type Claims struct {
 }
 
 // GenerateTokenPair 签发用户 Token
-func GenerateTokenPair(id uint, username string, authority int) (string, error) {
+func GenerateTokenPair(id uint, username string, authority int) (string, string, error) {
 
 	// 设置 accessToken 有效时间，3小时
 	accessExpireTime := time.Now().Add(10 * time.Minute)
@@ -57,9 +56,8 @@ func GenerateTokenPair(id uint, username string, authority int) (string, error) 
 	tokenClaims = jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	// 该方法内部生成签名字符串，再用于获取完整、已签名的 token
 	refreshToken, _ := tokenClaims.SignedString(jwtSecret)
-	model.DB.Model(model.User{}).Update("refresh_token", refreshToken)
 
-	return accessToken, err
+	return accessToken, refreshToken, err
 }
 
 // ParseToken 根据传入的 token 值获取到 Claims 对象信息，进而获取其中的用户名和密码

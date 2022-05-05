@@ -42,12 +42,6 @@ var Manager = ClientManager{
 	Unregister: make(chan *Client),
 }
 
-//func CreateClientID(SID int, RID int) string {
-//	sid := strconv.Itoa(SID)
-//	rid := strconv.Itoa(RID)
-//	return sid + "->" + rid
-//}
-
 func (c *Client) Read() {
 	//defer func() { // 避免忘记关闭，所以要加上close
 	//	Manager.Unregister <- c
