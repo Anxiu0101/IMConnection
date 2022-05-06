@@ -2,12 +2,12 @@ package service
 
 import (
 	"IMConnection/cache"
+	"IMConnection/pkg/e"
 	"IMConnection/pkg/logging"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -24,6 +24,7 @@ type Msg struct {
 	RID     uint   `json:"rid"`
 	Type    int    `json:"type"`
 	Content string `json:"content"`
+	Code    int    `json:"code"`
 }
 
 // Broadcast 广播类，包括广播内容和源用户
@@ -76,12 +77,14 @@ func (client *Client) Read() {
 			_ = client.Socket.Close()
 			break
 		}
-		if msg.Type == 1 {
+
+		// 信息类型为私信
+		if msg.Type == SingleChat {
 			r1, _ := cache.RedisClient.Get(cache.Ctx, client.SID).Result()
 			r2, _ := cache.RedisClient.Get(cache.Ctx, client.RID).Result()
 			if r1 >= "3" && r2 == "" { // 限制单聊
-				replyMsg := ReplyMsg{
-					Code:    e.WebsocketLimit,
+				replyMsg := Msg{
+					Code:    e.Error,
 					Content: "达到限制",
 				}
 				msg, _ := json.Marshal(replyMsg)
@@ -97,66 +100,31 @@ func (client *Client) Read() {
 				Client:  client,
 				Message: []byte(msg.Content),
 			}
-		} else if msg.Type == 2 { //拉取历史消息
-			timeT, err := strconv.Atoi(sendMsg.Content) // 传送来时间
-			if err != nil {
-				timeT = 999999999
-			}
-			results, _ := FindMany(conf.MongoDBName, c.SendID, c.ID, int64(timeT), 10)
-			if len(results) > 10 {
-				results = results[:10]
-			} else if len(results) == 0 {
-				replyMsg := ReplyMsg{
-					Code:    e.WebsocketEnd,
-					Content: "到底了",
-				}
-				msg, _ := json.Marshal(replyMsg)
-				_ = client.Socket.WriteMessage(websocket.TextMessage, msg)
-				continue
-			}
-			for _, result := range results {
-				replyMsg := ReplyMsg{
-					From:    result.From,
-					Content: fmt.Sprintf("%s", result.Msg),
-				}
-				msg, _ := json.Marshal(replyMsg)
-				_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
-			}
-		} else if msg.Type == 3 {
-			results, err := FirsFindtMsg(conf.MongoDBName, c.SendID, c.ID)
-			if err != nil {
-				log.Println(err)
-			}
-			for _, result := range results {
-				replyMsg := ReplyMsg{
-					From:    result.From,
-					Content: fmt.Sprintf("%s", result.Msg),
-				}
-				msg, _ := json.Marshal(replyMsg)
-				_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
-			}
+			// 信息类型为群聊
+		} else if msg.Type == 2 {
+
 		}
 	}
 }
 
 func (client *Client) Write() {
-	//defer func() {
-	//	_ = c.Socket.Close()
-	//}()
-	//for {
-	//	select {
-	//	case message, ok := <-c.Send:
-	//		if !ok {
-	//			_ = c.Socket.WriteMessage(websocket.CloseMessage, []byte{})
-	//			return
-	//		}
-	//		log.Println(c.ID, "接受消息:", string(message))
-	//		replyMsg := ReplyMsg{
-	//			Code:    e.WebsocketSuccessMessage,
-	//			Content: fmt.Sprintf("%s", string(message)),
-	//		}
-	//		msg, _ := json.Marshal(replyMsg)
-	//		_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
-	//	}
-	//}
+	defer func() {
+		_ = client.Socket.Close()
+	}()
+	for {
+		select {
+		case message, ok := <-client.Send:
+			if !ok {
+				_ = client.Socket.WriteMessage(websocket.CloseMessage, []byte{})
+				return
+			}
+			log.Println(client.SID, "接受消息:", string(message))
+			replyMsg := Msg{
+				Code:    e.Error,
+				Content: fmt.Sprintf("%s", string(message)),
+			}
+			msg, _ := json.Marshal(replyMsg)
+			_ = client.Socket.WriteMessage(websocket.TextMessage, msg)
+		}
+	}
 }
