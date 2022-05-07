@@ -16,9 +16,9 @@ type User struct {
 
 	// User Info
 	Email  string `json:"email" gorm:"type:varchar(100)"`
-	Gender int    `json:"gender" gorm:"size:3"`
-	Age    int    `json:"age" gorm:"size:8"`
-	Tel    int    `json:"tel" gorm:"size:24"`
+	Gender int    `json:"gender" gorm:"size:10"`
+	Age    int    `json:"age" gorm:"size:32;comment:UserAge"`
+	Tel    int    `json:"tel" gorm:"comment:UserTelephone"`
 
 	State   bool     `json:"state" gorm:"column:state;default:true;comment:T为正常,F为封禁"`
 	Friends []*User  `json:"friends" gorm:"many2many:user_friends"`

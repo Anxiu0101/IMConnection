@@ -1,6 +1,7 @@
 package service
 
 import (
+	"IMConnection/cache"
 	"IMConnection/model"
 	"IMConnection/pkg/e"
 	"IMConnection/pkg/logging"
@@ -68,7 +69,8 @@ func (service *AccountService) Register() model.Response {
 // 1. 查询用户
 // 2. 验证用户密码
 // 3. 生成 token
-// 4. 返回结果
+// 4. 将用户 ID 加载入内存
+// 5. 返回结果
 func (service *AccountService) Login() model.Response {
 	code := e.Success
 
@@ -93,6 +95,12 @@ func (service *AccountService) Login() model.Response {
 			Msg:  e.GetMsg(code),
 			Data: "用户密码错误",
 		}
+	}
+
+	// TODO 登陆时将用户加载入内存
+	if u1, _ := cache.RedisClient.Get(cache.Ctx, string(user.ID)).Result(); u1 == "0" {
+		// 不设置过期
+		cache.RedisClient.Set(cache.Ctx, string(user.ID), 1, 0)
 	}
 
 	// 将用户好友关系载入缓存，若加载失败则退出并返回 加载用户关系失败

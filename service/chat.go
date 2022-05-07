@@ -20,9 +20,7 @@ type Client struct {
 
 // Msg 发送消息的类型
 type Msg struct {
-	SID     uint   `json:"sid"`
-	RID     uint   `json:"rid"`
-	Type    int    `json:"type"`
+	Type    string `json:"type"`
 	Content string `json:"content"`
 	Code    int    `json:"code"`
 }
@@ -65,7 +63,6 @@ func (client *Client) Read() {
 	}()
 
 	// 无限循环保持连接 这个算轮询吗？
-
 	for {
 		client.Socket.PongHandler()
 		msg := new(Msg)
@@ -79,21 +76,28 @@ func (client *Client) Read() {
 		}
 
 		// 信息类型为私信
-		if msg.Type == SingleChat {
+		if msg.Type == "1" {
+
+			println("Here")
+			// 查看该联系 ID 的连接个数
 			r1, _ := cache.RedisClient.Get(cache.Ctx, client.SID).Result()
 			r2, _ := cache.RedisClient.Get(cache.Ctx, client.RID).Result()
-			if r1 >= "3" && r2 == "" { // 限制单聊
+			// 限制单聊个数
+			if r1 >= "3" && r2 == "" {
 				replyMsg := Msg{
 					Code:    e.Error,
 					Content: "达到限制",
 				}
 				msg, _ := json.Marshal(replyMsg)
 				_ = client.Socket.WriteMessage(websocket.TextMessage, msg)
-				_, _ = cache.RedisClient.Expire(cache.Ctx, client.SID, time.Hour*24*30).Result() // 防止重复骚扰，未建立连接刷新过期时间一个月
+				// 设置 key 过期时间，防止重复骚扰
+				_, _ = cache.RedisClient.Expire(cache.Ctx, client.SID, time.Hour*24*30).Result()
 				continue
 			} else {
+				// 单聊个数未超过上限，key 为 ID 的 value 自增一
 				cache.RedisClient.Incr(cache.Ctx, client.SID)
-				_, _ = cache.RedisClient.Expire(cache.Ctx, client.SID, time.Hour*24*30*3).Result() // 防止过快“分手”，建立连接三个月过期
+				// 设置过期时间为一日
+				_, _ = cache.RedisClient.Expire(cache.Ctx, client.SID, time.Hour*24).Result()
 			}
 			log.Println(client.SID, "发送消息", msg.Content)
 			Manager.Broadcast <- &Broadcast{
@@ -101,7 +105,9 @@ func (client *Client) Read() {
 				Message: []byte(msg.Content),
 			}
 			// 信息类型为群聊
-		} else if msg.Type == 2 {
+		} else if msg.Type == "GroupChat" {
+
+		} else if msg.Type == "History" {
 
 		}
 	}

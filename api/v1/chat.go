@@ -13,7 +13,7 @@ import (
 func Chat(c *gin.Context) {
 	claim, _ := util.ParseToken(c.GetHeader("Authorization"))
 	sender := int(claim.ID)
-	receiver := c.Query("receiver")
+	receiver := c.Param("receiver")
 
 	// 将 http 协议升级为 websocket 协议
 	conn, err := (&websocket.Upgrader{
@@ -35,6 +35,8 @@ func Chat(c *gin.Context) {
 		Socket: conn,
 		Send:   make(chan []byte),
 	}
+
+	println("SID: ", sender, "; RID: ", receiver)
 
 	// 用户注册到用户管理上
 	service.Manager.Register <- client
