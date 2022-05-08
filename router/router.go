@@ -3,7 +3,6 @@ package router
 import (
 	v1 "IMConnection/api/v1"
 	"IMConnection/docs"
-	"IMConnection/middleware"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -33,7 +32,7 @@ func InitRouter() *gin.Engine {
 
 	// token router
 	apiv1 := r.Group("/")
-	apiv1.Use(middleware.JWT())
+	//apiv1.Use(middleware.JWT())
 	{
 		apiv1.POST("/user/password", v1.ResetUserPassword)
 		apiv1.GET("/user/info", v1.GetUserInfo)

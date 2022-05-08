@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"log"
 	"net/http"
-	"strconv"
 )
 
 func Chat(c *gin.Context) {
 	claim, _ := util.ParseToken(c.GetHeader("Authorization"))
-	sender := int(claim.ID)
+	sender := claim.Username
 	receiver := c.Param("receiver")
 
 	// 将 http 协议升级为 websocket 协议
@@ -26,17 +26,19 @@ func Chat(c *gin.Context) {
 		http.NotFound(c.Writer, c.Request)
 		return
 	}
-	fmt.Println("webSocket 建立连接:", conn.RemoteAddr().String())
+	log.Println("webSocket 建立连接:", conn.RemoteAddr().String())
 
 	// Create A new Client Object
 	client := &service.Client{
-		SID:    strconv.Itoa(sender),
+		SID:    sender,
 		RID:    receiver,
 		Socket: conn,
 		Send:   make(chan []byte),
 	}
 
 	println("SID: ", sender, "; RID: ", receiver)
+	println(client.SID, "; ", client.RID, "; ", client.Socket, "; ", client.Send)
+	println(client.Socket.LocalAddr().String())
 
 	// 用户注册到用户管理上
 	service.Manager.Register <- client

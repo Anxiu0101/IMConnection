@@ -6,6 +6,7 @@ import (
 	"IMConnection/model"
 	"IMConnection/pkg/logging"
 	"IMConnection/router"
+	"IMConnection/service"
 	"fmt"
 	"net/http"
 )
@@ -19,6 +20,9 @@ func init() {
 
 func main() {
 	router := router.InitRouter()
+
+	// 开启服务管理监听
+	go service.Manager.Listen()
 
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%d", conf.ServerSetting.HttpPort),
