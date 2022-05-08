@@ -36,9 +36,7 @@ func Chat(c *gin.Context) {
 		Send:   make(chan []byte),
 	}
 
-	println("SID: ", sender, "; RID: ", receiver)
-	println(client.SID, "; ", client.RID, "; ", client.Socket, "; ", client.Send)
-	println(client.Socket.LocalAddr().String())
+	// TODO 登入时将用户加载入内存
 
 	// 用户注册到用户管理上
 	service.Manager.Register <- client

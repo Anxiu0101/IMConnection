@@ -83,17 +83,18 @@ func (client *Client) Read() {
 
 		// 信息类型为私信
 		if msg.Type == SingleChat {
-
-			println("Here")
 			// 查看该联系 ID 的连接个数
 			r1, _ := cache.RedisClient.Get(cache.Ctx, client.SID).Result()
 			r2, _ := cache.RedisClient.Get(cache.Ctx, client.RID).Result()
 			// 限制单聊个数
-			if r1 >= "3" && r2 == "" {
+			// FIXME r1 识别异常
+			if r1 >= "100" && r2 == "" {
 				replyMsg := MsgContent{
 					Code:    e.Error,
 					Content: "达到限制",
 				}
+				println("r1: ", r1)
+				println("r2: ", r2)
 				msg, _ := json.Marshal(replyMsg)
 				_ = client.Socket.WriteMessage(websocket.TextMessage, msg)
 				// 设置 key 过期时间，防止重复骚扰
