@@ -39,6 +39,9 @@ func InitRouter() *gin.Engine {
 		apiv1.GET("/user/info", v1.GetUserInfo)
 		apiv1.POST("/user/info", v1.UpdateUserInfo)
 
+		apiv1.POST("/group", v1.CreateGroup)
+		apiv1.PUT("/group/member", v1.InviteMember)
+
 		apiv1.GET("/chat/:receiver", v1.Chat)
 	}
 

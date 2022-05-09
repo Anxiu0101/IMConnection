@@ -20,12 +20,11 @@ type Client struct {
 
 // MsgContent 发送消息的类型
 type MsgContent struct {
+	SID     string `json:"sid"`
+	RID     string `json:"rid"`
 	Type    int    `json:"type"`
 	Content string `json:"content"`
 	Code    int    `json:"code"`
-}
-
-type StatusReply struct {
 }
 
 // Broadcast 广播类，包括广播内容和源用户
@@ -65,21 +64,20 @@ func (client *Client) Read() {
 		_ = client.Socket.Close()
 	}()
 
-	println("Here")
-
 	// 无限循环保持连接 这个算轮询吗？
 	for {
 		client.Socket.PongHandler()
 		msg := new(MsgContent)
-		fmt.Println("Msg: ", msg)
 		// _,msg,_:=c.Socket.ReadMessage()
-		err := client.Socket.ReadJSON(&msg) // 读取json格式，如果不是json格式，会报错
-		if err != nil {
-			logging.Info("数据格式不正确", err)
+		// 将用户发送的 JSON 消息进行参数绑定
+		if err := client.Socket.ReadJSON(msg); err != nil {
+			logging.Info("非 JSON 格式，数据格式不正确", err)
 			Manager.Unregister <- client
 			_ = client.Socket.Close()
 			break
 		}
+		msg.SID = client.SID
+		msg.RID = client.RID
 
 		// 信息类型为私信
 		if msg.Type == SingleChat {
@@ -88,7 +86,7 @@ func (client *Client) Read() {
 			r2, _ := cache.RedisClient.Get(cache.Ctx, client.RID).Result()
 			// 限制单聊个数
 			// FIXME r1 识别异常
-			if r1 >= "100" && r2 == "" {
+			if r1 >= "3" && r2 == "" {
 				replyMsg := MsgContent{
 					Code:    e.Error,
 					Content: "达到限制",
@@ -134,7 +132,10 @@ func (client *Client) Write() {
 			}
 			log.Println(client.SID, "接受消息:", string(message))
 			replyMsg := MsgContent{
-				Code:    e.Error,
+				SID:     client.SID,
+				RID:     client.RID,
+				Type:    1,
+				Code:    e.Success,
 				Content: fmt.Sprintf("%s", string(message)),
 			}
 			msg, _ := json.Marshal(replyMsg)

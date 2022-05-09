@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"IMConnection/api"
+	"IMConnection/model"
 	"IMConnection/pkg/logging"
 	"IMConnection/pkg/util"
 	"IMConnection/service"
@@ -27,7 +27,7 @@ func UserRegister(c *gin.Context) {
 		c.JSON(http.StatusOK, res)
 	} else {
 		logging.Info(err)
-		c.JSON(http.StatusBadRequest, api.ErrorResponse(err))
+		c.JSON(http.StatusBadRequest, model.ErrorResponse(err))
 	}
 }
 
@@ -47,7 +47,7 @@ func UserLogin(c *gin.Context) {
 		c.JSON(http.StatusOK, res)
 	} else {
 		logging.Info(err)
-		c.JSON(http.StatusBadRequest, api.ErrorResponse(err))
+		c.JSON(http.StatusBadRequest, model.ErrorResponse(err))
 	}
 }
 
@@ -59,7 +59,7 @@ func ResetUserPassword(c *gin.Context) {
 		c.JSON(http.StatusOK, res)
 	} else {
 		logging.Info(err)
-		c.JSON(http.StatusBadRequest, api.ErrorResponse(err))
+		c.JSON(http.StatusBadRequest, model.ErrorResponse(err))
 	}
 }
 
@@ -75,7 +75,7 @@ func GetUserInfo(c *gin.Context) {
 		c.JSON(http.StatusOK, res)
 	} else {
 		logging.Info(err)
-		c.JSON(http.StatusBadRequest, api.ErrorResponse(err))
+		c.JSON(http.StatusBadRequest, model.ErrorResponse(err))
 	}
 }
 
@@ -87,6 +87,6 @@ func UpdateUserInfo(c *gin.Context) {
 		c.JSON(http.StatusOK, res)
 	} else {
 		logging.Info(err)
-		c.JSON(http.StatusBadRequest, api.ErrorResponse(err))
+		c.JSON(http.StatusBadRequest, model.ErrorResponse(err))
 	}
 }
