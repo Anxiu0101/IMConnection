@@ -3,7 +3,11 @@ package service
 import (
 	"IMConnection/model"
 	"IMConnection/pkg/e"
+	"IMConnection/pkg/logging"
+	"errors"
 	"fmt"
+	"gorm.io/gorm"
+	"log"
 )
 
 type GroupService struct {
@@ -18,18 +22,31 @@ func (service *GroupService) Create() model.Response {
 	code := e.Success
 	var group model.Group
 
-	if err := model.DB.Select("name").Where("name = ?", service.Name).First(&group).Error; err != nil {
+	if err := model.DB.Select("name").Where("name = ?", service.Name).First(&group).Error; err == nil {
+		// 组名重复
 		code = e.InvalidParams
 		return model.Response{
 			Code: code,
 			Msg:  e.GetMsg(code),
 			Data: "组名冲突，请使用其他组名",
 		}
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		log.Println("允许新建组")
+	} else if err != nil {
+		code = e.Error
+		logging.Info(err)
+		return model.Response{
+			Code: code,
+			Msg:  e.GetMsg(code),
+			Data: "数据库查询异常",
+		}
 	}
 
 	group.Name = service.Name
-	if err := model.DB.Create(&service); err != nil {
+	if err := model.DB.Create(&group).Error; err != nil {
 		code = e.Error
+		logging.Info(err)
+		println("Here")
 		return model.Response{
 			Code: code,
 			Msg:  e.GetMsg(code),

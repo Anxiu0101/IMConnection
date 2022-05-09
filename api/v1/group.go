@@ -11,7 +11,7 @@ import (
 
 func CreateGroup(c *gin.Context) {
 	var groupService service.GroupService
-	if err := c.ShouldBind(groupService); err == nil {
+	if err := c.ShouldBind(&groupService); err == nil {
 		res := groupService.Create()
 		c.JSON(http.StatusOK, res)
 	} else {
