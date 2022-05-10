@@ -67,9 +67,34 @@ func (service *GroupService) Create() model.Response {
 // TODO group member invite service haven't finish
 func (service *GroupService) Invite(uid uint) model.Response {
 	code := e.Success
+
+	var user model.User
+	if err := model.DB.Model(model.User{}).Where("id = ?", uid).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		code = e.InvalidParams
+		logging.Info(err)
+		return model.Response{
+			Code: code,
+			Msg:  e.GetMsg(code),
+			Data: "User no found",
+		}
+	}
+
+	var group model.Group
+	if err := model.DB.Model(model.Group{}).Where("name = ?", service.Name).First(&group).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		code = e.InvalidParams
+		logging.Info(err)
+		return model.Response{
+			Code: code,
+			Msg:  e.GetMsg(code),
+			Data: "该组不存在",
+		}
+	}
+
+	model.DB.Model(model.Group{}).Where("name = ?", service.Name).Update("Members", append(group.Members, &user))
+
 	return model.Response{
 		Code: code,
 		Msg:  e.GetMsg(code),
-		Data: fmt.Sprintf("successful create %s", service.Name),
+		Data: fmt.Sprintf("successful invite %s to %s", user.UserName, service.Name),
 	}
 }
