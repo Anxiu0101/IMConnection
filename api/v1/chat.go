@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"IMConnection/cache"
 	"IMConnection/pkg/util"
 	"IMConnection/service"
 	"fmt"
@@ -36,7 +37,8 @@ func Chat(c *gin.Context) {
 		Send:   make(chan []byte),
 	}
 
-	// TODO 登入时将用户加载入内存
+	// 登入时将用户加载入内存
+	cache.RedisClient.Incr(cache.Ctx, client.SID)
 
 	// 用户注册到用户管理上
 	service.Manager.Register <- client

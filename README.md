@@ -69,6 +69,8 @@ $ go get -u github.com/unknwon/com      # util package
 
 ### 通信
 
+将服务拆分成多个客户端，包括 UserLogin, UserLogout, Broadcast 等，当用户使用了其中的某个服务时，将其推入到 channel 中传递进程信息，已启用服务。
+
 #### 消息队列
 
 所有用户都有他对应的消息队列，用户收到的任何消息都会储存到这个消息队列中，消息队列设置有效期，用户在离线后只能获取最近7日内的消息，而不是全部未读消息。

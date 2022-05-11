@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"IMConnection/cache"
 	"IMConnection/model"
 	"IMConnection/pkg/logging"
 	"IMConnection/pkg/util"
@@ -88,5 +89,18 @@ func UpdateUserInfo(c *gin.Context) {
 	} else {
 		logging.Info(err)
 		c.JSON(http.StatusBadRequest, model.ErrorResponse(err))
+	}
+}
+
+func UserOnline(c *gin.Context) {
+	claim, _ := util.ParseToken(c.GetHeader("Authorization"))
+	if cache.GetUserOnline(int(claim.ID)) {
+		c.JSON(http.StatusOK, gin.H{
+			"Data": "user is online",
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"Data": "user is offline",
+		})
 	}
 }

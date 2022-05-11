@@ -59,6 +59,7 @@ var Manager = ClientManager{
 }
 
 func (client *Client) Read() {
+	// 当用户与服务器断开连接是，关闭 websocket 连接
 	defer func() {
 		Manager.Unregister <- client
 		_ = client.Socket.Close()
@@ -84,8 +85,7 @@ func (client *Client) Read() {
 			// 查看该联系 ID 的连接个数
 			r1, _ := cache.RedisClient.Get(cache.Ctx, client.SID).Result()
 			r2, _ := cache.RedisClient.Get(cache.Ctx, client.RID).Result()
-			// 限制单聊个数
-			// FIXME r1 识别异常
+			// 限制单聊未回应消息个数
 			if r1 >= "3" && r2 == "" {
 				replyMsg := MsgContent{
 					Code:    e.Error,
@@ -111,7 +111,11 @@ func (client *Client) Read() {
 			}
 			// 信息类型为群聊
 		} else if msg.Type == GroupChat {
-
+			log.Println(client.SID, "发送消息", msg.Content)
+			Manager.Broadcast <- &Broadcast{
+				Client:  client,
+				Message: []byte(msg.Content),
+			}
 		} else if msg.Type == History {
 
 		}

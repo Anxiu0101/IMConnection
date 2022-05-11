@@ -1,7 +1,6 @@
 package conf
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -83,8 +82,6 @@ func Setup() {
 	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
 	DatabaseSetting.SetConnMaxLifetime = DatabaseSetting.SetConnMaxLifetime * time.Hour
 	RedisSetting.IdleTimeout = RedisSetting.IdleTimeout * time.Second
-
-	fmt.Println("DatabaseSetting.User: " + DatabaseSetting.User)
 }
 
 // mapTo map section

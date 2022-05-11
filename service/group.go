@@ -46,7 +46,6 @@ func (service *GroupService) Create() model.Response {
 	if err := model.DB.Create(&group).Error; err != nil {
 		code = e.Error
 		logging.Info(err)
-		println("Here")
 		return model.Response{
 			Code: code,
 			Msg:  e.GetMsg(code),

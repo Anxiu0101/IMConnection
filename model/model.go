@@ -49,5 +49,6 @@ func Setup() {
 	DB.AutoMigrate(
 		&User{},
 		&Group{},
+		&Message{},
 	)
 }
