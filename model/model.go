@@ -50,5 +50,6 @@ func Setup() {
 		&User{},
 		&Group{},
 		&Message{},
+		&GroupMessage{},
 	)
 }

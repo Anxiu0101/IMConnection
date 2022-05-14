@@ -64,11 +64,11 @@ func (service *GroupService) Create() model.Response {
 // 1. 查询用户是否存在
 // 2. 查询
 // TODO group member invite service haven't finish
-func (service *GroupService) Invite(uid uint) model.Response {
+func (service *GroupService) Invite(name string) model.Response {
 	code := e.Success
 
 	var user model.User
-	if err := model.DB.Model(model.User{}).Where("id = ?", uid).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := model.DB.Model(model.User{}).Where("username = ?", name).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		code = e.InvalidParams
 		logging.Info(err)
 		return model.Response{
@@ -89,7 +89,15 @@ func (service *GroupService) Invite(uid uint) model.Response {
 		}
 	}
 
-	model.DB.Model(model.Group{}).Where("name = ?", service.Name).Update("Members", append(group.Members, &user))
+	// FIXME 能正常插入数据但是会报空指针异常
+	if err := model.DB.Model(&group).Association("Members").Append(&user).Error; err != nil {
+		code = e.Error
+		return model.Response{
+			Code: code,
+			Msg:  e.GetMsg(code),
+			Data: "加入群组错误",
+		}
+	}
 
 	return model.Response{
 		Code: code,

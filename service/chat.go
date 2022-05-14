@@ -3,12 +3,12 @@ package service
 import (
 	"IMConnection/cache"
 	"IMConnection/model"
-	"IMConnection/pkg/e"
 	"IMConnection/pkg/logging"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -25,7 +25,6 @@ type Msg struct {
 	RID     string `json:"rid"`
 	Type    int    `json:"type"`
 	Content string `json:"content"`
-	Code    int    `json:"code"`
 }
 
 // Broadcast 广播类，包括广播内容和源用户
@@ -89,7 +88,6 @@ func (client *Client) Read() {
 			// 限制单聊未回应消息个数
 			if r1 >= "3" && r2 == "" {
 				replyMsg := Msg{
-					Code:    e.Error,
 					Content: "达到限制",
 				}
 				println("r1: ", r1)
@@ -105,11 +103,20 @@ func (client *Client) Read() {
 				// 设置过期时间为一日
 				_, _ = cache.RedisClient.Expire(cache.Ctx, client.SID, time.Hour*24).Result()
 			}
-			log.Println(client.SID, "发送消息", msg.Content)
-			if err := model.DB.Model(model.Message{}).Create(&msg).Error; err != nil {
+			log.Println("1. ", client.SID, "发送消息", msg.Content)
+			rid, _ := strconv.Atoi(msg.RID)
+			sid, _ := strconv.Atoi(msg.SID)
+			message := model.Message{
+				RID:     uint(rid),
+				SID:     uint(sid),
+				Type:    msg.Type,
+				Content: msg.Content,
+			}
+			if err := model.DB.Create(&message).Error; err != nil {
 				log.Println("Save Message Error")
 			}
 			Manager.Broadcast <- &Broadcast{
+				Type:    1,
 				Client:  client,
 				Message: []byte(msg.Content),
 			}
@@ -118,10 +125,24 @@ func (client *Client) Read() {
 			log.Println(client.SID, "发送消息", msg.Content)
 			//data := model.GetUserList(client.RID, conf.AppSetting.PageSize)
 			//client.RID = list
-			model.DB.Create(&msg)
+
+			var group model.Group
+			model.DB.Model(model.Group{}).Where("name = ?", client.RID).Find(&group)
+
+			var members []uint
+			model.DB.Model(&group).Select("user_id").Association("Members").Find(&members)
+
+			var message = model.GroupMessage{
+				SID:     msg.SID,
+				RID:     msg.RID,
+				Type:    msg.Type,
+				Content: msg.Content,
+			}
+			model.DB.Model(model.GroupMessage{}).Create(&message)
 			Manager.Broadcast <- &Broadcast{
 				Client:  client,
 				Message: []byte(msg.Content),
+				Type:    2,
 			}
 		} else if msg.Type == History {
 
@@ -145,8 +166,7 @@ func (client *Client) Write() {
 			replyMsg := Msg{
 				SID:     client.SID,
 				RID:     client.RID,
-				Type:    1,
-				Code:    e.Success,
+				Type:    0,
 				Content: fmt.Sprintf("%s", string(message)),
 			}
 			msg, _ := json.Marshal(replyMsg)

@@ -24,8 +24,8 @@ $ go get -u github.com/unknwon/com      # util package
 
 ## 问题
 
-- [ ] 一对一消息传输 私聊
-- [ ] 一对多消息传输 群聊
+- [x] 一对一消息传输 私聊
+- [x] 一对多消息传输 群聊
 - [ ] 离线消息队列
 - [ ] 邮箱注册？
 - [ ] 聊天图片
@@ -66,6 +66,37 @@ $ go get -u github.com/unknwon/com      # util package
 好友关系在用户未登录时，储存在 SQL 数据库中，当用户从客户端发送了登录请求后，用户 ID 会被服务器加载到内存，该用户的好友关系会被缓存到 redis 数据库中，以提高访问速度。
 
 利用 `gorm` 的 `ManyToMany` 模式在 User 与 User 之间创建一张自引用连接表
+
+### Many2Many
+
+```go
+package main
+
+import (
+	"ginLearn.com/models"
+)
+
+func main() {
+	db := models.DB()
+	role := models.Role{}
+	role.ID = 8
+	var permissionSlice []models.Permission
+	//根据角色查询所有权限
+	db.Model(&role).Related(&permissionSlice, "permission")
+
+	//我们更新角色的所有权限该怎么做呢？
+	//1、删除角色的所有的权限
+	db.Where("role_id=?", role.ID).Unscoped().Delete(&models.RolePermission{})
+	//2、给角色赋予权限
+	role.Permission = []models.Permission{permissionSlice[0]}
+	//更新角色的权限
+	db.Save(&role)
+}
+
+
+```
+
+
 
 ### 通信
 

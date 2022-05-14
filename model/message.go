@@ -5,9 +5,9 @@ import "gorm.io/gorm"
 type GroupMessage struct {
 	gorm.Model
 
-	SenderID uint `json:"uid" gorm:"column:uid"`
-	Sender   User `json:"sender" gorm:"foreignKey:SenderID"`
-
+	SID     string `json:"sid" gorm:"size:255"`
+	RID     string `json:"rid" gorm:"size:255"`
+	Type    int    `json:"type"`
 	Content string `json:"content" gorm:"type:text"`
 }
 
@@ -21,5 +21,5 @@ type Message struct {
 	Receiver User `json:"receiver" gorm:"foreignKey:RID"`
 
 	Type    int    `json:"type"`
-	Content []byte `json:"content" gorm:""`
+	Content string `json:"content" gorm:""`
 }

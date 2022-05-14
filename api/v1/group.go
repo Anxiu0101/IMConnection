@@ -24,7 +24,8 @@ func InviteMember(c *gin.Context) {
 	var groupService service.GroupService
 	if err := c.ShouldBind(&groupService); err == nil {
 		claim, _ := util.ParseToken(c.GetHeader("Authorization"))
-		res := groupService.Invite(claim.ID)
+		println(claim.Username)
+		res := groupService.Invite(claim.Username)
 		c.JSON(http.StatusOK, res)
 	} else {
 		logging.Info(err)
