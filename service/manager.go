@@ -12,13 +12,13 @@ import (
 
 func (manager *ClientManager) Listen() {
 	for {
-		println("==============Listening Channel Connection==============")
+		println("=======================Listening Channel Connection=======================")
 		select {
 		/* 建立连接 */
 		case conn := <-Manager.Register:
 			log.Printf("Build New Connect: %v", conn.SID)
 			Manager.Clients[conn.SID] = conn
-			replyMsg := &MsgContent{
+			replyMsg := &Msg{
 				SID:     "Client",
 				RID:     conn.SID,
 				Code:    e.Success,
@@ -31,7 +31,7 @@ func (manager *ClientManager) Listen() {
 		case conn := <-Manager.Unregister:
 			log.Printf("Fail to Connect:%v", conn.SID)
 			if _, ok := Manager.Clients[conn.SID]; ok {
-				replyMsg := &MsgContent{
+				replyMsg := &Msg{
 					SID:     "Client",
 					RID:     conn.SID,
 					Code:    e.Success,
@@ -72,7 +72,7 @@ func (manager *ClientManager) Listen() {
 			rid, _ := strconv.Atoi(broadcast.Client.RID)
 			if flag {
 				log.Println("对方在线应答")
-				replyMsg := &MsgContent{
+				replyMsg := &Msg{
 					SID:     "Client",
 					RID:     broadcast.Client.SID,
 					Code:    e.Success,
@@ -89,14 +89,14 @@ func (manager *ClientManager) Listen() {
 				println("SID: ", msgs.SID)
 				println("RID: ", msgs.RID)
 				println("Content", string(msgs.Content))
-				if err := model.DB.Create(&msgs).Error; err != nil {
+				if err := model.DB.Create(&msg).Error; err != nil {
 					fmt.Println("InsertOneMsg Err", err)
 				} else {
 					println("here")
 				}
 			} else {
 				log.Println("对方不在线")
-				replyMsg := MsgContent{
+				replyMsg := Msg{
 					SID:     "Client",
 					RID:     broadcast.Client.SID,
 					Code:    e.Success,

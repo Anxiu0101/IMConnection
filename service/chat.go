@@ -18,8 +18,8 @@ type Client struct {
 	Send   chan []byte
 }
 
-// MsgContent 发送消息的类型
-type MsgContent struct {
+// Msg 发送消息的类型
+type Msg struct {
 	SID     string `json:"sid"`
 	RID     string `json:"rid"`
 	Type    int    `json:"type"`
@@ -68,7 +68,7 @@ func (client *Client) Read() {
 	// 无限循环保持连接 这个算轮询吗？
 	for {
 		client.Socket.PongHandler()
-		msg := new(MsgContent)
+		msg := new(Msg)
 		// _,msg,_:=c.Socket.ReadMessage()
 		// 将用户发送的 JSON 消息进行参数绑定
 		if err := client.Socket.ReadJSON(msg); err != nil {
@@ -87,7 +87,7 @@ func (client *Client) Read() {
 			r2, _ := cache.RedisClient.Get(cache.Ctx, client.RID).Result()
 			// 限制单聊未回应消息个数
 			if r1 >= "3" && r2 == "" {
-				replyMsg := MsgContent{
+				replyMsg := Msg{
 					Code:    e.Error,
 					Content: "达到限制",
 				}
@@ -135,7 +135,7 @@ func (client *Client) Write() {
 				return
 			}
 			log.Println(client.SID, "接受消息:", string(message))
-			replyMsg := MsgContent{
+			replyMsg := Msg{
 				SID:     client.SID,
 				RID:     client.RID,
 				Type:    1,
