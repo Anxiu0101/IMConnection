@@ -2,6 +2,7 @@ package service
 
 import (
 	"IMConnection/cache"
+	"IMConnection/model"
 	"IMConnection/pkg/e"
 	"IMConnection/pkg/logging"
 	"encoding/json"
@@ -105,6 +106,9 @@ func (client *Client) Read() {
 				_, _ = cache.RedisClient.Expire(cache.Ctx, client.SID, time.Hour*24).Result()
 			}
 			log.Println(client.SID, "发送消息", msg.Content)
+			if err := model.DB.Model(model.Message{}).Create(&msg).Error; err != nil {
+				log.Println("Save Message Error")
+			}
 			Manager.Broadcast <- &Broadcast{
 				Client:  client,
 				Message: []byte(msg.Content),
@@ -112,6 +116,9 @@ func (client *Client) Read() {
 			// 信息类型为群聊
 		} else if msg.Type == GroupChat {
 			log.Println(client.SID, "发送消息", msg.Content)
+			//data := model.GetUserList(client.RID, conf.AppSetting.PageSize)
+			//client.RID = list
+			model.DB.Create(&msg)
 			Manager.Broadcast <- &Broadcast{
 				Client:  client,
 				Message: []byte(msg.Content),

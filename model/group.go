@@ -12,14 +12,21 @@ type Group struct {
 }
 
 // GetUserList 获取组用户列表
-func GetUserList(name string, pageNum, pageSize int) {
-	var data []User
-	err := DB.Select("Members").Model(Group{}).
-		Where("name = ?", name).
-		Offset(pageNum).Limit(pageSize).
-		Find(&data).Error
-	if err != nil {
-
-	}
-
-}
+//func GetUserList(name string, pageSize int) map[string]interface{} {
+//	var data []User
+//
+//	err := DB.Select("Members").Model(Group{}).
+//		Where("name = ?", name).
+//		Limit(pageSize).Find(&data).Error
+//	if err != nil {
+//		log.Printf("Error: %s", err)
+//	}
+//
+//	var group Group
+//	gid := DB.Model(Group{}).Select("id").Where("name = ?", name)
+//
+//	var result map[string]interface{}
+//	DB.Table("imc_group_members").Select("user_id").Where("group_id = ?")
+//
+//	return data
+//}

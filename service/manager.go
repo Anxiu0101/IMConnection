@@ -5,9 +5,10 @@ import (
 	"IMConnection/pkg/e"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"log"
 	"strconv"
+
+	"github.com/gorilla/websocket"
 )
 
 func (manager *ClientManager) Listen() {
@@ -45,16 +46,15 @@ func (manager *ClientManager) Listen() {
 
 		/* 消息广播 */
 		case broadcast := <-Manager.Broadcast:
-			log.Println("Broad messages to group member")
-			println("SID", broadcast.Client.SID)
-			println("RID", broadcast.Client.RID)
-
 			for _, client := range Manager.Clients {
 				println(client.SID)
 			}
 
 			message := broadcast.Message
 			RID := broadcast.Client.RID
+			println("broadcast.Client.RID: ", broadcast.Client.RID)
+			println("Content: ", string(broadcast.Message))
+			//RID := model.GetUserList(broadcast.Client.RID, conf.AppSetting.PageSize)
 			flag := false // 默认对方不在线
 			for id, conn := range Manager.Clients {
 				if id != RID {
@@ -63,8 +63,10 @@ func (manager *ClientManager) Listen() {
 				select {
 				case conn.Send <- message:
 					flag = true
+					println("Flag become true here")
 				default:
 					close(conn.Send)
+					println("conn SID: ", conn.SID)
 					delete(Manager.Clients, conn.SID)
 				}
 			}
@@ -104,15 +106,6 @@ func (manager *ClientManager) Listen() {
 				}
 				msg, _ := json.Marshal(replyMsg)
 				_ = broadcast.Client.Socket.WriteMessage(websocket.TextMessage, msg)
-				msgs := model.Message{
-					SID:     uint(sid),
-					RID:     uint(rid),
-					Type:    broadcast.Type,
-					Content: msg,
-				}
-				if err := model.DB.Create(&msgs).Error; err != nil {
-					fmt.Println("InsertOneMsg Err", err)
-				}
 			}
 		}
 	}
